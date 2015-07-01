@@ -25,17 +25,25 @@ train_model$Sex <- as.numeric(train$Sex)
 
 var1 <- train_model$Sex
 var2 <- as.numeric(train_model$Pclass)
-var <- cbind(var1, var2)
+var3 <- train_model$Fare
+# var3 <- as.numeric(train_model$Age)
+var <- cbind(var1, var2, var3)
 y <- train_model$Survived
 
 n = length(var1)
 
-theta = matrix(0, nrow = 2, ncol = 1)
+theta = matrix(c(0, 0, 0), nrow = 3, ncol = 1)
 
 cost <- function(theta){
     y_dash = 1 / (1 + exp(-(t(theta) %*% t(var))))
     cost <- 1/n * (-sum(y * log(1 - y_dash) + (1 - y) * log(y_dash)))
     return(cost)
 }
+init_cost = cost(theta)
 
-optim(par = theta, fn = cost)
+l <- optim(par = theta, fn = cost)
+
+theta <- l$par
+fin_cost <- cost(theta)
+y_dash = 1 / (1 + exp(-(t(theta) %*% t(var))))
+survived_dash <- y_dash > 0.7
